@@ -188,7 +188,7 @@ Now we can use that policy to make a new token and use that token to create a ne
 ➜  vault policy read exercise
 # Allow role creation on the aws/ path
 path "aws/roles/*" {
-  capabilities = [ "create", "read", "update", "delete" ]
+  capabilities = [ "create", "read", "update", "delete", "list" ]
 }
 ➜  vault token create -policy=exercise 
 Key                  Value
