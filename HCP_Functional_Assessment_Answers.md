@@ -2,15 +2,15 @@
 
 Ticket 1:
 
-```
+
 Hello Joe,
 
 Thanks for reaching out to the HCP support team. My name is Gary and I will be assisting you with this request.
 
 Looking at the policy that you have provided, you are wanting to restrict access to the path "apps/*" while also allowing additional access to the path "apps/data/+/+/secrets/*" . Unfortunately in this case the way the priority rules are structured, the "apps/*" policy has higher priority. Here is a snippet from our documentation that explains why: 
-```
+
 ![](./policy_example.png)
-```
+
 Source: https://developer.hashicorp.com/vault/docs/concepts/policies#policy-syntax
 
 The recommended solution for this scenario would be to specify each unique path "apps/data/+/+/secrets/*" in the '/+/+' portion of this path.
@@ -24,12 +24,12 @@ Best Regards,
 Gary Singer
 Support Engineer - HCP
 HashiCorp
-```
 
 
+____
 Ticket 2:
 
-```
+
 Hello Hashicorp User,
 
 Thanks for reaching out to the HCP support team. My name is Gary and I will be assisting you with this request.
@@ -45,7 +45,8 @@ Best Regards,
 Gary Singer
 Support Engineer - HCP
 HashiCorp
-```
+
+____
 
 Notes: From the customers initial request it appears that they have already setup a HCP Vault Cluster. They are wanting more information on how to connect to the private address of the cluster.
 
