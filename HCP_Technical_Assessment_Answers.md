@@ -3,29 +3,58 @@
 1. Setup a basic AWS secrets engine
 
 `vault server -dev`
+```zsh
+➜  ~ vault server -dev
+==> Vault server configuration:
 
-The command above runs a vault server in memory and should only be used for development and experimentation purposes.
+Administrative Namespace: 
+             Api Address: http://127.0.0.1:8200
+                     Cgo: disabled
+         Cluster Address: https://127.0.0.1:8201
+...
+2024-03-10T16:50:14.415-0500 [INFO]  core: vault is unsealed
+2024-03-10T16:50:14.423-0500 [INFO]  core: successful mount: namespace="" path=secret/ type=kv version=""
+WARNING! dev mode is enabled! In this mode, Vault runs entirely in-memory
+and starts unsealed with a single unseal key. The root token is already
+authenticated to the CLI, so you can immediately begin using Vault.
 
-Notes:
-	Binds to 127.0.0.1:8200 by default without TLS
+You may need to set the following environment variables:
+
+    $ export VAULT_ADDR='http://127.0.0.1:8200'
+
+The unseal key and root token are displayed below in case you want to
+seal/unseal the Vault or re-authenticate.
+
+Unseal Key: SSCB0PgXgXpyJUbfLZliyaLxRD708pzswWwweZ2rEHs=
+Root Token: hvs.MzwH2JiVR9Ahra7TMfJjtFKn
+
+Development mode should NOT be used in production installations!
+
+2024-03-10T16:50:43.027-0500 [INFO]  core: successful mount: namespace="" path=aws/ type=aws version=""
+```
 
 Open a new tab and make sure to set
 
 `export VAULT_ADDR='http://127.0.0.1:8200'`
 
-`export VAULT_TOKEN=<insert your vault token here>` 
+`export VAULT_TOKEN='hvs.MzwH2JiVR9Ahra7TMfJjtFKn'`
 
 before running the next command
 
 `vault secrets enable aws` 
+```zsh
+➜  ~ vault secrets enable aws
+Success! Enabled the aws secrets engine at: aws/
+```
 
 This will enable the aws secrets engine and allow you to write to the aws/ path in vault
 
-```shell
-$ vault write aws/config/root \
+```zsh
+➜  ~ vault write aws/config/root \
 access_key=AKIA \
 secret_key=abcdefg \
 region=us-east-1
+Success! Data written to: aws/config/root
 ```
 
 You should see `Success! Data written to: aws/config/root` as the result of running the command above
@@ -86,8 +115,32 @@ curl \
 ```
 You can test if your new role was added by running `vault list aws/roles/`
 
-Deleting roles is done by specifing a specific role:
-`vault delete aws/roles/<role to delete>`
+```zsh
+➜  ~ curl \
+    --request POST 'http://127.0.0.1:8200/v1/aws/roles/my-role' \
+    --header "X-Vault-Token:$VAULT_TOKEN" \
+    --json '{
+                "credential_type": "iam_user",
+                "policy_document": "{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Action\": \"ec2:*\", \"Resource\": \"*\" } ] }"
+             }'
+➜  ~ vault list aws/roles/
+Keys
+----
+my-role
+➜  ~ curl \
+    --header "X-Vault-Token:hvs.MzwH2JiVR9Ahra7TMfJjtFKn" \
+    --request POST \
+    --data '{
+                "credential_type": "iam_user",
+                "policy_document": "{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Action\": \"ec2:*\", \"Resource\": \"*\" } ] }"
+             }' \
+    http://127.0.0.1:8200/v1/aws/roles/my-role2
+➜  ~ vault list aws/roles/
+Keys
+----
+my-role
+my-role2
+```
 
 ____
 
@@ -103,30 +156,45 @@ I'll name the file `exercise-policy.hcl` and add the following to the file:
 ```bash
 # Allow role creation on the aws/roles/* path
 path "aws/roles/*" {
-  capabilities = [ "create", "read", "update", "delete" ]
+  capabilities = [ "create", "read", "update", "delete", "list" ]
 }
 ```
 
-From this documentation https://developer.hashicorp.com/vault/docs/concepts/policies#capabilities I determined that create and update are usually used together. The read and delete options may not be necessary in this case, but I included them so the user has the ability to use `vault list aws/roles` and `vault delete aws/roles/<role>`
+From this documentation https://developer.hashicorp.com/vault/docs/concepts/policies#capabilities I determined that create and update are usually used together. The read , delete and list options may not be necessary in this case, but I included them so the user has the ability to use `vault list aws/roles` , `vault delete aws/roles/<role>` and `vault list aws/roles/`
 
 Now we can create a new policy called `exercise` with the added role creation permissions:
 
 `vault policy write exercise <path to exercise-policy.hcl>` 
+```zsh
+➜  vault policy write exercise exercise-policy.hcl
+Success! Uploaded policy: exercise
+```
 
 You can test to see if the new policy is made by running the following:
 
 `vault policy list`
+```zsh
+➜  vault vault policy list 
+default
+exercise
+root
+```
 
 We see that the new `exercise` policy is added.
 
 Now we can use that policy to make a new token and use that token to create a new role:
 
-```bash
-$ vault token create -policy=exercise
+```zsh
+➜  vault policy read exercise
+# Allow role creation on the aws/ path
+path "aws/roles/*" {
+  capabilities = [ "create", "read", "update", "delete" ]
+}
+➜  vault token create -policy=exercise 
 Key                  Value
 ---                  -----
-token                hvs.CAESIG134ux5NAMEOFTOKENGOESHEREKHGh2cy5YWUQ4dENhMnRXTkFZZ0dXZmNKZzhiTVo
-token_accessor       avlAv8oG7O4UisOBT9PxXhBU
+token                hvs.CAESIAhkiDlg2rf7lZQYQInI4b8RbGlJLkSDM4KtSDTmyWceGh4KHGh2cy5zcWhXaGdTZlhYU3RCTm8wR25YdFlRWGw
+token_accessor       NQhghy8fAvoOo5Pvu7iYCl1I
 token_duration       768h
 token_renewable      true
 token_policies       ["default" "exercise"]
@@ -140,8 +208,9 @@ We will take that token and override the previous `VAULT_TOKEN` environment vari
 
 Then running the `vault write aws/roles/my-role...` command results in a successful write to `aws/roles/my-role` using the newly created policy
 
-```bash
-$ vault write aws/roles/my-role \                                                                                     
+```zsh
+➜  export VAULT_TOKEN='hvs.CAESIAhkiDlg2rf7lZQYQInI4b8RbGlJLkSDM4KtSDTmyWceGh4KHGh2cy5zcWhXaGdTZlhYU3RCTm8wR25YdFlRWGw'
+➜  vault write aws/roles/my-role3 \
 credential_type=iam_user \
 policy_document=-<<EOF
 {
@@ -155,5 +224,11 @@ policy_document=-<<EOF
 ]
 }
 EOF
-Success! Data written to: aws/roles/my-role
+Success! Data written to: aws/roles/my-role3
+➜  vault list aws/roles/  
+Keys
+----
+my-role
+my-role2
+my-role3
 ```
