@@ -2,18 +2,17 @@
 
 Ticket 1:
 
-
 Hello Joe,
 
 Thanks for reaching out to the HCP support team. My name is Gary and I will be assisting you with this request.
 
-Looking at the policy that you have provided, you are wanting to restrict access to the path "apps/*" while also allowing additional access to the path "apps/data/+/+/secrets/*" . Unfortunately in this case the way the priority rules are structured, the "apps/*" policy has higher priority. Here is a snippet from our documentation that explains why: 
+Looking at the policy that you have provided, you are wanting to restrict access to the path "apps/\*" while also allowing additional access to the path "apps/data/+/+/secrets/\*" . Unfortunately in this case the way the priority rules are structured, the "apps/*" policy has higher priority. Here is a snippet from our documentation that explains why: 
 
 ![](./policy_example.png)
 
 Source: https://developer.hashicorp.com/vault/docs/concepts/policies#policy-syntax
 
-The recommended solution for this scenario would be to specify each unique path "apps/data/+/+/secrets/*" in the '/+/+' portion of this path.
+The recommended solution for this scenario would be to specify each unique path "apps/data/+/+/secrets/\*" in the '/+/+' portion of this path.
 
 I understand that this isn't the ideal solution for for your policy use case, but I hope my explanation has provided insight on how to move forward with your policy creation.
 
