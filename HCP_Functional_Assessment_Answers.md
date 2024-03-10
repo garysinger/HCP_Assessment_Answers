@@ -21,10 +21,9 @@ If you have any additional questions or need any further clarification on this, 
 
 Best Regards,
 
-Gary Singer
-Support Engineer - HCP
-HashiCorp
-
+Gary Singer<br>
+Support Engineer - HCP<br>
+HashiCorp<br>
 
 ____
 Ticket 2:
@@ -42,9 +41,9 @@ If you have any questions or need any clarification on the information above, fe
 
 Best Regards,
 
-Gary Singer
-Support Engineer - HCP
-HashiCorp
+Gary Singer<br>
+Support Engineer - HCP<br>
+HashiCorp<br>
 
 ____
 
