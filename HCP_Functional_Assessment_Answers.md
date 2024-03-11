@@ -32,7 +32,7 @@ Hello Hashicorp User,
 
 Thanks for reaching out to the HCP support team. My name is Gary and I will be assisting you with this request.
 
-Since you are trying to access the Private address for the HCP Vault Cluster, a peering connection between cluster and your AWS VPC will need to be established. We have a guide on how to set that up here: https://developer.hashicorp.com/hcp/tutorials/networking/amazon-peering-hcp 
+Since you are trying to access the Private address for the HCP Vault Cluster, a peering connection between the cluster and your AWS VPC will need to be established. We have a guide on how to set that up here: https://developer.hashicorp.com/hcp/tutorials/networking/amazon-peering-hcp 
 
 If you are wanting to connect multiple AWS VPCs then you can setup an AWS Transit setup using this guide: https://developer.hashicorp.com/hcp/tutorials/networking/amazon-transit-gateway
 
