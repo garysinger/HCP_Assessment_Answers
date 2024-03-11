@@ -105,7 +105,7 @@ To match the formatting of the docs and to stay consistent with the customer fac
 
 ```bash
 curl \
-    --header "X-Vault-Token:hvs.6czExampleTokenHerexpUUr" \
+    --header "X-Vault-Token:hvs.MzwH2JiVR9Ahra7TMfJjtFKn" \
     --request POST \
     --data '{
                 "credential_type": "iam_user",
