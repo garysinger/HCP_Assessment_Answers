@@ -16,7 +16,7 @@ The recommended solution for this scenario would be to specify each unique path 
 
 I understand that this isn't the ideal solution for for your policy use case, but I hope my explanation has provided insight on how to move forward with your policy creation.
 
-If you have any additional questions or need any further clarification on this, feel free to replay to this email and we will be glad to assist.
+If you have any additional questions or need any further clarification on this, feel free to reply to this email and we will be glad to assist.
 
 Best Regards,
 
